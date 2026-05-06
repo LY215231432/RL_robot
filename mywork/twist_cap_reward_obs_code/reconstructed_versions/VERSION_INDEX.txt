@@ -1,0 +1,5 @@
+﻿1. v01_basic_staged_grasp
+2. v02_add_vertical_tcp
+3. v03_gripper_center_alignment
+4. v04_vertical_press_posture
+5. v05_action_direction_latest

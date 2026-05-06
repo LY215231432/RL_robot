@@ -1,0 +1,12 @@
+_single_body_position: observations.py:26-32
+_single_body_quaternion: observations.py:35-41
+_body_point_w: observations.py:44-54
+_gripper_pad_midpoint_w: observations.py:57-67
+_cap_grasp_target_w: observations.py:70-80
+_cap_approach_target_w: observations.py:83-94
+cap_position_in_robot_root_frame: observations.py:97-108
+gripper_center_position_in_robot_root_frame: observations.py:111-126
+gripper_center_to_cap: observations.py:129-148
+gripper_center_to_approach_target: observations.py:151-177
+cap_joint_position: observations.py:180-187
+cap_angle_error: observations.py:190-198
