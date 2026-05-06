@@ -12,7 +12,7 @@ import torch
 from isaaclab.assets import Articulation
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.sensors import ContactSensor, FrameTransformer
-from isaaclab.utils.math import matrix_from_quat, quat_apply
+from isaaclab.utils.math import matrix_from_quat, quat_apply, subtract_frame_transforms
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
@@ -198,6 +198,7 @@ def approach_action_towards_cap(
     close_joint_pos: float = 0.85,
     xy_weight: float = 0.7,
     cap_cfg: SceneEntityCfg = SceneEntityCfg("twist_object", body_names="cap_link"),
+    robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
     gripper_cfg: SceneEntityCfg = SceneEntityCfg("robot", joint_names=["joint_left_finger", "joint_right_finger"]),
     left_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="left_finger"),
     right_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="right_finger"),
@@ -218,7 +219,10 @@ def approach_action_towards_cap(
         grasp_height=grasp_height,
     )
 
-    desired_delta = approach_target_w - gripper_center_w
+    robot: Articulation = env.scene[robot_cfg.name]
+    approach_target_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, approach_target_w)
+    gripper_center_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, gripper_center_w)
+    desired_delta = approach_target_b - gripper_center_b
     arm_action = env.action_manager.get_term(action_name).processed_actions[:, :3]
 
     desired_xy = desired_delta.clone()
@@ -246,7 +250,8 @@ def approach_action_towards_cap(
     distance_gate = torch.clamp(desired_norm.squeeze(-1) / active_distance, min=0.0, max=1.0)
     gripper_open = _gripper_open_ratio(env, gripper_cfg=gripper_cfg, close_joint_pos=close_joint_pos)
     direction_mix = xy_weight * xy_direction_score + (1.0 - xy_weight) * direction_score
-    return direction_mix * action_mag * distance_gate * (0.5 + 0.5 * gripper_open)
+    reward = direction_mix * action_mag * distance_gate * (0.5 + 0.5 * gripper_open)
+    return torch.nan_to_num(reward, nan=0.0, posinf=0.0, neginf=0.0)
 
 
 def approach_cap_from_above(
@@ -552,7 +557,7 @@ def grasp_cap(
     right_contact = _contact_force_score(env, "contact_right_grasp", force_scale=contact_force_scale)
     bilateral_contact = torch.minimum(left_contact, right_contact)
     descend_gate = _stage_gate(descent_score, descend_gate_threshold)
-    contact_bonus = 0.35 + 0.65 * bilateral_contact
+    contact_bonus = 0.12 + 0.88 * bilateral_contact
     return descend_gate * gripper_closed * contact_bonus
 
 
