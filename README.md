@@ -1,11 +1,13 @@
 # RL Robot xArm7 Isaac Lab Project
 
-这个仓库是基于 NVIDIA Isaac Lab 的 xArm7 具身强化学习项目，当前重点是机械臂抓取和旋拧瓶盖任务。项目保留了 Isaac Lab 的运行框架，同时加入了 xArm7 技能注册、训练脚本、twist-cap 任务环境、reward/observation 设计和实验说明。
+这个仓库是基于 NVIDIA Isaac Lab 的 xArm7 具身强化学习项目，当前重点是机械臂抓取、旋拧瓶盖和推拉杆控制面板任务。项目保留了 Isaac Lab 的运行框架，同时加入了 xArm7 技能注册、训练脚本、twist-cap / control-panel 任务环境、reward/observation 设计和实验说明。
 
 ## 项目内容
 
 - `source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/twist_cap/`
   xArm7 旋拧瓶盖任务，包括场景、动作、观测、奖励、终止条件和 PPO 配置。
+- `source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/control_panel/`
+  xArm7 推拉杆和拨动开关任务，包括滑杆、旋转开关、接触传感器、侧向推动 reward 和 PPO 配置。
 - `source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/xarm7_skill_lib/registry.py`
   xArm7 技能注册表，当前包含 `lift_cube`、`twist_cap`、`switch_panel` 和 `slider_panel`。
 - `scripts/reinforcement_learning/rsl_rl/train_xarm7_skill.py`
@@ -57,7 +59,43 @@ conda activate env_isaaclab
 - `lift_cube`: xArm7 抓取方块并移动到目标区域。
 - `twist_cap`: xArm7 对准瓶盖、下压夹取并沿瓶盖轴向旋转。
 - `switch_panel`: 用夹爪侧面拨动旋转开关。
-- `slider_panel`: 用夹爪侧面推动滑块到目标区域。
+- `slider_panel`: 用夹爪侧面推动推拉杆滑块到目标区域。
+
+## 推拉杆任务
+
+推拉杆任务对应技能名 `slider_panel`，Gym 任务 ID 为 `Isaac-Slider-Panel-XArm7-v0`，回放任务 ID 为 `Isaac-Slider-Panel-XArm7-Play-v0`。场景中放置一个带 prismatic joint 的滑杆面板，xArm7 需要移动到滑块侧面，保持夹爪张开，用一侧手指或夹爪侧面接触滑块，并沿滑杆运动方向把滑块推到目标区域。
+
+这个任务不要求像抓取任务那样闭合夹爪，而是训练机械臂学会“侧向接触 + 持续推动”的操作方式。策略观测包含滑块目标点、夹爪中心位置、夹爪到目标点的误差、滑杆关节位置、关节速度、目标误差和上一时刻动作。reward 主要由接近目标点、手指接触滑块、沿目标方向输出 IK 动作、滑杆关节朝目标推进、到达目标后的稀疏奖励，以及靠近但无有效接触的惩罚组成。
+
+相关代码入口：
+
+```text
+source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/control_panel/control_panel_env_cfg.py
+source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/control_panel/mdp/observations.py
+source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/control_panel/mdp/rewards.py
+source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/control_panel/config/xarm7/ik_rel_env_cfg.py
+source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/control_panel/config/xarm7/agents/rsl_rl_ppo_cfg.py
+```
+
+烟雾测试：
+
+```powershell
+.\isaaclab.bat -p scripts\reinforcement_learning\rsl_rl\train_xarm7_skill.py --skill slider_panel --num_envs 32 --max_iterations 1 --headless
+```
+
+正式训练：
+
+```powershell
+.\isaaclab.bat -p scripts\reinforcement_learning\rsl_rl\train_xarm7_skill.py --skill slider_panel --num_envs 256 --max_iterations 4000 --headless
+```
+
+训练完成后测试：
+
+```powershell
+.\isaaclab.bat -p scripts\reinforcement_learning\rsl_rl\play_xarm7_skill.py --skill slider_panel --num_envs 1 --checkpoint logs\rsl_rl\xarm7_slider_panel\<run_time>\model_<iter>.pt
+```
+
+同一套 control-panel 代码还包含 `switch_panel`，它是用夹爪侧面拨动 revolute switch lever 的旋转开关任务，适合和推拉杆任务一起作为“非抓取式接触操作”的技能补充。
 
 ## 训练
 
