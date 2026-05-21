@@ -1,0 +1,732 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>xarm7_isaaclab_group_meeting.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="xarm7-%E6%8A%93%E5%8F%96%E6%96%B9%E5%9D%97%E4%BB%BB%E5%8A%A1%E5%AE%9E%E7%8E%B0%E8%AF%B4%E6%98%8E">xArm7 抓取方块任务实现说明</h1>
+<h2 id="1-%E9%A1%B9%E7%9B%AE%E7%9B%AE%E6%A0%87">1. 项目目标</h2>
+<p>本次工作的目标是：在仅有一份 <code>xarm7.urdf</code> 机械臂模型的基础上，将自定义夹爪接入到 IsaacLab 中，构建一个能够完成“抓取并抬起方块”的强化学习任务，并完成训练、回放和录屏。</p>
+<p>最终实现的是一条完整链路：</p>
+<p><code>URDF 机器人模型 -&gt; IsaacLab 机器人资产 -&gt; Lift 任务配置 -&gt; PPO 训练 -&gt; checkpoint 回放/录屏</code></p>
+<hr>
+<h2 id="2-%E5%B7%B2%E5%AE%8C%E6%88%90%E5%86%85%E5%AE%B9%E6%80%BB%E8%A7%88">2. 已完成内容总览</h2>
+<h3 id="21-%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%A8%A1%E5%9E%8B%E6%94%B9%E9%80%A0">2.1 机器人模型改造</h3>
+<ul>
+<li>基于本地 <code>xarm7.urdf</code> 扩展了夹爪结构。</li>
+<li>夹爪采用“左右两个整体转动的爪体”方案，不再使用断开的四连杆近似。</li>
+<li>增加了 <code>joint_left_finger</code> / <code>joint_right_finger</code> 两个夹爪转动关节。</li>
+<li>增加了 <code>link_tcp</code> 作为末端任务参考点。</li>
+<li>为夹爪增加了可参与物理接触的碰撞体，保证抓取过程不是“绑定物体”，而是真实碰撞与摩擦形成夹持。</li>
+</ul>
+<h3 id="22-isaaclab-%E4%BB%BB%E5%8A%A1%E6%8E%A5%E5%85%A5">2.2 IsaacLab 任务接入</h3>
+<ul>
+<li>新建 xArm7 机器人资产配置，能够从本地 URDF 自动转换为 IsaacLab 可用的 articulation。</li>
+<li>新建 xArm7 对应的 <code>lift cube</code> 任务配置。</li>
+<li>注册了两个任务：
+<ul>
+<li><code>Isaac-Lift-Cube-XArm7-v0</code></li>
+<li><code>Isaac-Lift-Cube-XArm7-Play-v0</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="23-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%B5%8B%E8%AF%95">2.3 训练与测试</h3>
+<ul>
+<li>使用 RSL-RL 的 PPO 完成训练配置。</li>
+<li>训练任务已经跑通，输出了完整 checkpoint。</li>
+<li>可以使用 <code>play.py</code> 回放训练结果。</li>
+<li>可以使用 <code>--video</code> 录制测试视频。</li>
+<li>已将录屏视角调近，便于展示夹爪和方块交互细节。</li>
+</ul>
+<h3 id="24-%E5%B7%A5%E7%A8%8B%E9%97%AE%E9%A2%98%E4%BF%AE%E5%A4%8D">2.4 工程问题修复</h3>
+<ul>
+<li>修复了本地 IsaacLab 仓库包未正确安装导致的 <code>ModuleNotFoundError: isaaclab</code>。</li>
+<li>修复了 <code>play.py</code> 启动时因 <code>h5py</code> 导入触发的 DLL 问题：
+<ul>
+<li>将 HDF5 数据集导出模块改成惰性导入；</li>
+<li>避免在只做回放/录屏时无关地触发 <code>h5py</code>。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="3-%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0%E9%93%BE%E8%B7%AF">3. 系统实现链路</h2>
+<h3 id="31-%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%A8%A1%E5%9E%8B%E5%B1%82">3.1 机器人模型层</h3>
+<p>核心文件：</p>
+<ul>
+<li><code>mywork/mymujoco/xarm7_urdf_base/xarm7.urdf</code></li>
+<li><code>mywork/mymujoco/xarm7_urdf_base/xarm_description/</code></li>
+<li><code>mywork/mymujoco/grasping_assets/assets/</code></li>
+</ul>
+<p>这一层负责定义：</p>
+<ul>
+<li>机械臂 7 个关节</li>
+<li>夹爪 2 个转动关节</li>
+<li>机械臂与夹爪的视觉模型</li>
+<li>机械臂与夹爪的碰撞模型</li>
+<li>末端 <code>link_tcp</code></li>
+</ul>
+<p>这里最重要的一点是：夹爪的抓取不是奖励里“写出来的”，而是依靠夹爪碰撞体、方块刚体、接触力和摩擦自然产生的。</p>
+<h3 id="32-isaaclab-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%B5%84%E4%BA%A7%E5%B1%82">3.2 IsaacLab 机器人资产层</h3>
+<p>核心文件：</p>
+<ul>
+<li><code>IsaacLab-main/source/isaaclab_assets/isaaclab_assets/robots/xarm7.py</code></li>
+</ul>
+<p>这一层的作用是把 URDF 接进 IsaacLab，并补齐训练所需信息：</p>
+<ul>
+<li>本地 URDF 路径解析</li>
+<li>URDF -&gt; USD 缓存目录</li>
+<li>固定底座</li>
+<li>mimic joint 转普通关节</li>
+<li>机械臂与夹爪驱动器</li>
+<li>初始关节角</li>
+</ul>
+<p>其中夹爪驱动器配置为：</p>
+<ul>
+<li>关节：<code>joint_left_finger</code>, <code>joint_right_finger</code></li>
+<li><code>effort_limit_sim = 20.0</code></li>
+<li><code>velocity_limit_sim = 2.0</code></li>
+<li><code>stiffness = 400.0</code></li>
+<li><code>damping = 40.0</code></li>
+</ul>
+<p>这保证了策略输出的“开/合命令”可以转化成稳定的夹爪闭合行为。</p>
+<h3 id="33-%E4%BB%BB%E5%8A%A1%E9%85%8D%E7%BD%AE%E5%B1%82">3.3 任务配置层</h3>
+<p>核心文件：</p>
+<ul>
+<li><code>IsaacLab-main/source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/lift/config/xarm7/joint_pos_env_cfg.py</code></li>
+<li><code>IsaacLab-main/source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/lift/config/xarm7/__init__.py</code></li>
+</ul>
+<p>这一层定义了训练任务本身，包括：</p>
+<ul>
+<li>机器人是谁：<code>XARM7_CFG</code></li>
+<li>抓什么：<code>DexCube</code></li>
+<li>方块初始位置范围</li>
+<li>方块目标位置范围</li>
+<li>机械臂动作空间</li>
+<li>夹爪动作空间</li>
+<li>末端参考 frame</li>
+<li>回放时相机视角</li>
+</ul>
+<p>当前 xArm7 任务中的关键设置：</p>
+<ul>
+<li>机械臂动作：7 个关节位置控制</li>
+<li>夹爪动作：二值开/合控制</li>
+<li>物块初始位置范围：
+<ul>
+<li><code>x: (-0.06, 0.08)</code></li>
+<li><code>y: (-0.12, 0.12)</code></li>
+<li><code>z: (0.0, 0.0)</code></li>
+</ul>
+</li>
+<li>物块目标位置范围：
+<ul>
+<li><code>pos_x = (0.28, 0.45)</code></li>
+<li><code>pos_y = (-0.18, 0.18)</code></li>
+<li><code>pos_z = (0.18, 0.34)</code></li>
+</ul>
+</li>
+</ul>
+<p>需要注意：</p>
+<ul>
+<li>第一组范围表示“方块每回合随机出现的位置”；</li>
+<li>第二组范围表示“方块被抓起后，希望被送到的位置”。</li>
+</ul>
+<h3 id="34-%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE%E5%B1%82">3.4 训练配置层</h3>
+<p>核心文件：</p>
+<ul>
+<li><code>IsaacLab-main/source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/lift/config/xarm7/agents/rsl_rl_ppo_cfg.py</code></li>
+</ul>
+<p>当前 PPO 关键参数为：</p>
+<ul>
+<li><code>num_steps_per_env = 24</code></li>
+<li><code>max_iterations = 3000</code></li>
+<li><code>save_interval = 50</code></li>
+<li><code>experiment_name = &quot;xarm7_lift&quot;</code></li>
+</ul>
+<p>网络结构：</p>
+<ul>
+<li>actor hidden dims: <code>[256, 128, 64]</code></li>
+<li>critic hidden dims: <code>[256, 128, 64]</code></li>
+<li>activation: <code>elu</code></li>
+</ul>
+<p>算法参数：</p>
+<ul>
+<li><code>learning_rate = 1e-4</code></li>
+<li><code>gamma = 0.98</code></li>
+<li><code>lam = 0.95</code></li>
+<li><code>entropy_coef = 0.006</code></li>
+<li><code>clip_param = 0.2</code></li>
+</ul>
+<hr>
+<h2 id="4-%E5%A5%96%E5%8A%B1%E8%AE%BE%E8%AE%A1%E8%AF%B4%E6%98%8E">4. 奖励设计说明</h2>
+<p>奖励定义来自：</p>
+<ul>
+<li><code>IsaacLab-main/source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/lift/lift_env_cfg.py</code></li>
+<li><code>IsaacLab-main/source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/lift/mdp/rewards.py</code></li>
+</ul>
+<p>当前 reward 可以概括为：</p>
+<p><code>reaching + lifting + goal_tracking + fine_goal_tracking - action_penalty - joint_velocity_penalty</code></p>
+<h3 id="41-%E5%85%B7%E4%BD%93%E5%A5%96%E5%8A%B1%E9%A1%B9">4.1 具体奖励项</h3>
+<ol>
+<li><code>reaching_object</code></li>
+</ol>
+<ul>
+<li>鼓励末端接近物块。</li>
+<li>形式是 <code>1 - tanh(distance / std)</code>。</li>
+</ul>
+<ol start="2">
+<li><code>lifting_object</code></li>
+</ol>
+<ul>
+<li>当方块高度高于阈值时给出较大正奖励。</li>
+<li>相当于明确鼓励“把物块抬离桌面”。</li>
+</ul>
+<ol start="3">
+<li><code>object_goal_tracking</code></li>
+</ol>
+<ul>
+<li>只有方块被抬起来以后才生效。</li>
+<li>鼓励物块靠近目标位置。</li>
+</ul>
+<ol start="4">
+<li><code>object_goal_tracking_fine_grained</code></li>
+</ol>
+<ul>
+<li>对目标附近的细粒度位置误差更敏感。</li>
+<li>用于提升最终放置精度。</li>
+</ul>
+<ol start="5">
+<li><code>action_rate</code></li>
+</ol>
+<ul>
+<li>惩罚动作变化太快，减少抖动。</li>
+</ul>
+<ol start="6">
+<li><code>joint_vel</code></li>
+</ol>
+<ul>
+<li>惩罚关节速度过大，提高控制平滑性。</li>
+</ul>
+<h3 id="42-%E4%B8%80%E4%B8%AA%E9%87%8D%E8%A6%81%E7%89%B9%E7%82%B9">4.2 一个重要特点</h3>
+<p>这套奖励里没有显式的“接触奖励”或“夹紧奖励”。</p>
+<p>因此策略是通过下面这条链自己学会抓取的：</p>
+<p><code>先靠近方块 -&gt; 尝试闭合夹爪 -&gt; 如果真的夹住并抬起，会拿到更大的 lifting/goal reward -&gt; 最终强化出抓取行为</code></p>
+<p>换句话说：</p>
+<ul>
+<li>“怎么抓住”由物理接触决定；</li>
+<li>“什么时候闭合夹爪”由强化学习策略自己学出来。</li>
+</ul>
+<hr>
+<h2 id="5-%E7%89%A9%E4%BD%93%E6%98%AF%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E5%92%8C%E6%8A%93%E5%8F%96%E7%9A%84">5. 物体是如何生成和抓取的</h2>
+<h3 id="51-%E7%89%A9%E4%BD%93%E7%94%9F%E6%88%90">5.1 物体生成</h3>
+<p>任务中的物块不是运行时手写生成的简单几何体，而是从 Isaac 现成 USD 资产加载：</p>
+<ul>
+<li>资产：<code>DexCube</code></li>
+<li>类型：<code>RigidObjectCfg</code></li>
+</ul>
+<p>创建逻辑在 <code>joint_pos_env_cfg.py</code> 中：</p>
+<ul>
+<li>默认初始位姿：<code>[0.38, 0.0, 0.055]</code></li>
+<li>reset 时再通过 <code>reset_root_state_uniform</code> 在给定范围内随机偏移</li>
+</ul>
+<h3 id="52-%E7%89%A9%E4%BD%93%E5%A6%82%E4%BD%95%E8%A2%AB%E6%8A%93%E4%BD%8F">5.2 物体如何被抓住</h3>
+<p>方块被抓住依赖三部分：</p>
+<ol>
+<li>夹爪可控开合</li>
+</ol>
+<ul>
+<li>通过 <code>BinaryJointPositionActionCfg</code> 把策略动作映射为“张开/闭合”</li>
+</ul>
+<ol start="2">
+<li>夹爪有真实碰撞体</li>
+</ol>
+<ul>
+<li>左右爪体都配置了 mesh collision 和 box collision</li>
+</ul>
+<ol start="3">
+<li>物理引擎处理接触与摩擦</li>
+</ol>
+<ul>
+<li>方块是刚体</li>
+<li>夹爪闭合后，两侧接触和摩擦会形成夹持</li>
+</ul>
+<p>所以抓取不是“程序把方块绑在夹爪上”，而是真实物理交互结果。</p>
+<hr>
+<h2 id="6-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C">6. 训练与测试结果</h2>
+<p>训练结果目录：</p>
+<ul>
+<li><code>IsaacLab-main/logs/rsl_rl/xarm7_lift/2026-04-08_12-42-49/</code></li>
+</ul>
+<p>当前已有：</p>
+<ul>
+<li>多个训练 checkpoint</li>
+<li>最终 checkpoint：<code>model_2999.pt</code></li>
+<li>配置快照：<code>params/env.yaml</code>、<code>params/agent.yaml</code></li>
+<li>导出策略：<code>exported/policy.pt</code>、<code>exported/policy.onnx</code></li>
+<li>回放视频：<code>videos/play/rl-video-step-0.mp4</code></li>
+</ul>
+<p>这说明以下流程已经跑通：</p>
+<ul>
+<li>任务创建成功</li>
+<li>训练成功</li>
+<li>checkpoint 加载成功</li>
+<li>回放成功</li>
+<li>视频录制成功</li>
+</ul>
+<hr>
+<h2 id="7-%E5%B7%A5%E7%A8%8B%E9%97%AE%E9%A2%98%E4%B8%8E%E4%BF%AE%E5%A4%8D">7. 工程问题与修复</h2>
+<h3 id="71-isaaclab-%E6%9C%AC%E5%9C%B0%E6%BA%90%E7%A0%81%E5%8C%85%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98">7.1 IsaacLab 本地源码包导入问题</h3>
+<p>问题：</p>
+<ul>
+<li>使用 <code>train.py</code> 时出现 <code>ModuleNotFoundError: No module named 'isaaclab'</code></li>
+</ul>
+<p>原因：</p>
+<ul>
+<li>当前环境里虽然有 Python 解释器，但本地仓库源码没有正确以 editable 方式安装到环境中。</li>
+</ul>
+<p>解决：</p>
+<ul>
+<li>将 <code>isaaclab</code>、<code>isaaclab_assets</code>、<code>isaaclab_tasks</code>、<code>isaaclab_rl</code> 安装到当前环境。</li>
+</ul>
+<h3 id="72-playpy-%E7%9A%84-h5py-dll-%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98">7.2 <code>play.py</code> 的 <code>h5py</code> DLL 导入问题</h3>
+<p>问题：</p>
+<ul>
+<li>回放时在启动阶段因为 <code>h5py</code> 导入失败而崩溃。</li>
+</ul>
+<p>原因：</p>
+<ul>
+<li>实际只是要回放/录屏，但 IsaacLab 在模块导入阶段提前触发了 HDF5 数据集导出逻辑。</li>
+</ul>
+<p>解决：</p>
+<ul>
+<li>修改 <code>isaaclab.utils.datasets.__init__</code>，将 <code>HDF5DatasetFileHandler</code> 改为惰性导入。</li>
+<li>修改 <code>recorder_manager.py</code>，仅在真正启用 dataset export 时才解析 HDF5 handler。</li>
+</ul>
+<p>效果：</p>
+<ul>
+<li><code>play.py</code> 不再因为无关的 <code>h5py</code> 导入而阻塞；</li>
+<li>成功生成回放视频。</li>
+</ul>
+<hr>
+<h2 id="8-%E5%BD%93%E5%89%8D%E6%96%B9%E6%A1%88%E7%9A%84%E5%B1%80%E9%99%90">8. 当前方案的局限</h2>
+<ol>
+<li>夹爪仍是工程近似模型</li>
+</ol>
+<ul>
+<li>当前夹爪已经能用于训练与抓取；</li>
+<li>但不是严格的闭环四连杆真实机构学模型。</li>
+</ul>
+<ol start="2">
+<li>reward 中没有显式接触奖励</li>
+</ol>
+<ul>
+<li>可以学会抓取；</li>
+<li>但训练稳定性和样本效率可能不如“显式接触奖励 + 抬升奖励”的组合。</li>
+</ul>
+<ol start="3">
+<li>当前任务仍属于单物体、单形状抓取</li>
+</ol>
+<ul>
+<li>目标是抓取一个固定类型方块；</li>
+<li>泛化到更多物体还需要进一步扩展。</li>
+</ul>
+<hr>
+<h2 id="9-%E5%90%8E%E7%BB%AD%E5%8F%AF%E7%BB%A7%E7%BB%AD%E4%BC%98%E5%8C%96%E7%9A%84%E6%96%B9%E5%90%91">9. 后续可继续优化的方向</h2>
+<ol>
+<li>增加显式抓取奖励</li>
+</ol>
+<ul>
+<li>例如加入接触检测奖励、夹爪闭合时稳定接触奖励。</li>
+</ul>
+<ol start="2">
+<li>增加域随机化</li>
+</ol>
+<ul>
+<li>如摩擦、质量、初始位置、目标点范围随机化。</li>
+</ul>
+<ol start="3">
+<li>扩展到多物体/多尺寸抓取</li>
+</ol>
+<ul>
+<li>提升策略泛化能力。</li>
+</ul>
+<ol start="4">
+<li>进一步优化夹爪机构建模</li>
+</ol>
+<ul>
+<li>若后续要更贴近真实机构，可转向 MJCF 或更完整的闭环机构表达方式。</li>
+</ul>
+<ol start="5">
+<li>增加结果可视化和评估指标</li>
+</ol>
+<ul>
+<li>成功率</li>
+<li>抬升高度</li>
+<li>抓取稳定性</li>
+<li>平均 episode reward</li>
+</ul>
+<hr>
+
+</body>
+</html>
+

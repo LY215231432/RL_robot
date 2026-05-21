@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<robot name="xarm7_slider_panel">
+  <material name="panel_dark">
+    <color rgba="0.18 0.18 0.20 1.0"/>
+  </material>
+  <material name="track_gray">
+    <color rgba="0.42 0.42 0.45 1.0"/>
+  </material>
+  <material name="slider_blue">
+    <color rgba="0.05 0.32 0.85 1.0"/>
+  </material>
+  <material name="goal_green">
+    <color rgba="0.08 0.75 0.28 1.0"/>
+  </material>
+
+  <link name="panel_base">
+    <inertial>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <mass value="0.8"/>
+      <inertia ixx="0.002" ixy="0" ixz="0" iyy="0.004" iyz="0" izz="0.005"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.24 0.18 0.02"/>
+      </geometry>
+      <material name="panel_dark"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.24 0.18 0.02"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0.023" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.042 0.13 0.006"/>
+      </geometry>
+      <material name="track_gray"/>
+    </visual>
+    <visual>
+      <origin xyz="0 0.048 0.029" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.052 0.014 0.006"/>
+      </geometry>
+      <material name="goal_green"/>
+    </visual>
+  </link>
+
+  <link name="slider_knob">
+    <inertial>
+      <origin xyz="0 0 0.014" rpy="0 0 0"/>
+      <mass value="0.08"/>
+      <inertia ixx="0.00004" ixy="0" ixz="0" iyy="0.00003" iyz="0" izz="0.00004"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.016" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.052 0.032 0.032"/>
+      </geometry>
+      <material name="slider_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.016" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.052 0.032 0.032"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="slider_joint" type="prismatic">
+    <parent link="panel_base"/>
+    <child link="slider_knob"/>
+    <origin xyz="0 -0.055 0.028" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0.0" upper="0.11" effort="4.0" velocity="1.5"/>
+    <dynamics damping="0.08" friction="0.01"/>
+  </joint>
+</robot>
+

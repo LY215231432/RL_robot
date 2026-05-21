@@ -21,15 +21,15 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransformerCfg
-from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg, UsdFileCfg
 from isaaclab.utils import configclass
-from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 
 from . import mdp
 
 
 VERTICAL_PRESS_JOINT_POS = [0.0, -0.38, 0.16, 1.22, 0.0, 0.98, 0.0]
 ARM_JOINT_CFG = SceneEntityCfg("robot", joint_names=["joint[1-7]"])
+CAP_SIDE_GRASP_HEIGHT = 0.033
+CAP_HEIGHT = 0.03
 
 
 def _resolve_twist_cap_urdf() -> Path:
@@ -94,14 +94,22 @@ class TwistCapSceneCfg(InteractiveSceneCfg):
 
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
-        init_state=AssetBaseCfg.InitialStateCfg(pos=[0.5, 0, 0], rot=[0.707, 0, 0, 0.707]),
-        spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Mounts/SeattleLabTable/table_instanceable.usd"),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=[0.42, 0.0, -0.04]),
+        spawn=sim_utils.CuboidCfg(
+            size=(0.78, 0.56, 0.04),
+            collision_props=sim_utils.CollisionPropertiesCfg(collision_enabled=True),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.35, 0.36, 0.34), roughness=0.8),
+        ),
     )
 
     plane = AssetBaseCfg(
         prim_path="/World/GroundPlane",
-        init_state=AssetBaseCfg.InitialStateCfg(pos=[0, 0, -1.05]),
-        spawn=GroundPlaneCfg(),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=[0.0, 0.0, -1.05]),
+        spawn=sim_utils.CuboidCfg(
+            size=(20.0, 20.0, 0.02),
+            collision_props=sim_utils.CollisionPropertiesCfg(collision_enabled=True),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.12, 0.12, 0.12), roughness=1.0),
+        ),
     )
 
     light = AssetBaseCfg(
@@ -134,7 +142,9 @@ class ObservationsCfg:
         cap_position = ObsTerm(func=mdp.cap_position_in_robot_root_frame)
         gripper_center_pos = ObsTerm(func=mdp.gripper_center_position_in_robot_root_frame)
         gripper_center_to_cap = ObsTerm(func=mdp.gripper_center_to_cap)
+        finger_pair_to_cap = ObsTerm(func=mdp.finger_pair_to_cap)
         gripper_center_to_approach = ObsTerm(func=mdp.gripper_center_to_approach_target)
+        finger_pair_to_approach = ObsTerm(func=mdp.finger_pair_to_approach_target)
         cap_angle = ObsTerm(func=mdp.cap_joint_position)
         cap_angle_error = ObsTerm(func=mdp.cap_angle_error, params={"goal_angle": 1.0})
         actions = ObsTerm(func=mdp.last_action)
@@ -160,7 +170,7 @@ class RewardsCfg:
     vertical_tcp = RewTerm(
         func=mdp.tcp_vertical_alignment,
         params={"axis_index": 2, "target_sign": -1.0},
-        weight=8.0,
+        weight=3.0,
     )
     vertical_press_posture = RewTerm(
         func=mdp.vertical_press_posture,
@@ -169,13 +179,13 @@ class RewardsCfg:
             "std": 0.45,
             "robot_cfg": ARM_JOINT_CFG,
         },
-        weight=1.0,
+        weight=0.25,
     )
     approach_action_direction = RewTerm(
         func=mdp.approach_action_towards_cap,
         params={
             "approach_clearance": 0.055,
-            "grasp_height": 0.018,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
             "min_action_norm": 0.004,
             "active_distance": 0.18,
             "close_joint_pos": 0.85,
@@ -188,24 +198,38 @@ class RewardsCfg:
         params={
             "std": 0.14,
             "approach_clearance": 0.055,
-            "grasp_height": 0.018,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
             "close_joint_pos": 0.85,
             "vertical_axis_index": 2,
             "vertical_target_sign": -1.0,
         },
-        weight=12.0,
+        weight=8.0,
     )
     finger_center_on_cap = RewTerm(
         func=mdp.gripper_center_to_cap_alignment,
         params={
             "xy_std": 0.025,
             "z_std": 0.02,
-            "grasp_height": 0.018,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
             "close_joint_pos": 0.85,
             "vertical_axis_index": 2,
             "vertical_target_sign": -1.0,
         },
-        weight=9.0,
+        weight=6.0,
+    )
+    finger_side_wall_pair = RewTerm(
+        func=mdp.finger_pair_side_wall_alignment,
+        params={
+            "xy_std": 0.04,
+            "z_std": 0.035,
+            "span_std": 0.03,
+            "line_std": 0.028,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
+            "close_joint_pos": 0.85,
+            "vertical_axis_index": 2,
+            "vertical_target_sign": -1.0,
+        },
+        weight=14.0,
     )
     side_approach = RewTerm(
         func=mdp.side_approach_penalty,
@@ -213,51 +237,94 @@ class RewardsCfg:
             "xy_std": 0.025,
             "z_std": 0.02,
             "safe_xy_radius": 0.012,
-            "grasp_height": 0.018,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
             "close_joint_pos": 0.85,
         },
         weight=-3.0,
+    )
+    finger_over_cap = RewTerm(
+        func=mdp.finger_over_cap_penalty,
+        params={
+            "inner_radius": 0.017,
+            "z_std": 0.035,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
+        },
+        weight=-5.0,
+    )
+    cap_top_contact = RewTerm(
+        func=mdp.cap_top_contact_penalty,
+        params={
+            "top_radius": 0.024,
+            "top_height": CAP_HEIGHT,
+            "side_grasp_height": CAP_SIDE_GRASP_HEIGHT,
+            "z_std": 0.01,
+        },
+        weight=-6.0,
+    )
+    single_finger_contact = RewTerm(
+        func=mdp.single_finger_contact_penalty,
+        params={
+            "contact_force_scale": 4.0,
+            "xy_std": 0.08,
+            "z_std": 0.06,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
+        },
+        weight=-4.0,
     )
     find_cap_above = RewTerm(
         func=mdp.approach_cap_from_above,
         params={
             "std": 0.06,
             "approach_clearance": 0.055,
-            "grasp_height": 0.018,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
             "close_joint_pos": 0.85,
             "vertical_axis_index": 2,
             "vertical_target_sign": -1.0,
         },
-        weight=6.0,
+        weight=3.0,
     )
     descend_to_grasp = RewTerm(
         func=mdp.descend_to_cap_grasp,
         params={
-            "xy_std": 0.02,
-            "z_std": 0.015,
-            "grasp_height": 0.018,
+            "xy_std": 0.03,
+            "z_std": 0.025,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
             "close_joint_pos": 0.85,
-            "hover_gate_threshold": 0.65,
+            "hover_gate_threshold": 0.45,
+            "straddle_gate_threshold": 0.35,
             "reference_joint_pos": VERTICAL_PRESS_JOINT_POS,
             "posture_std": 0.45,
-            "posture_gate_threshold": 0.35,
+            "posture_gate_threshold": 0.25,
             "robot_posture_cfg": ARM_JOINT_CFG,
             "vertical_axis_index": 2,
             "vertical_target_sign": -1.0,
         },
-        weight=7.0,
+        weight=10.0,
+    )
+    close_on_straddle = RewTerm(
+        func=mdp.close_on_cap_straddle,
+        params={
+            "xy_std": 0.04,
+            "z_std": 0.035,
+            "straddle_gate_threshold": 0.30,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
+            "close_joint_pos": 0.85,
+        },
+        weight=8.0,
     )
     grasp_cap = RewTerm(
         func=mdp.grasp_cap,
         params={
-            "xy_std": 0.02,
-            "z_std": 0.015,
+            "xy_std": 0.03,
+            "z_std": 0.025,
             "contact_force_scale": 4.0,
             "close_joint_pos": 0.85,
-            "descend_gate_threshold": 0.45,
+            "grasp_height": CAP_SIDE_GRASP_HEIGHT,
+            "descend_gate_threshold": 0.25,
+            "straddle_gate_threshold": 0.35,
             "reference_joint_pos": VERTICAL_PRESS_JOINT_POS,
             "posture_std": 0.45,
-            "posture_gate_threshold": 0.35,
+            "posture_gate_threshold": 0.25,
             "robot_posture_cfg": ARM_JOINT_CFG,
         },
         weight=10.0,
@@ -320,12 +387,12 @@ class CurriculumCfg:
 
     vertical_tcp = CurrTerm(
         func=mdp.modify_reward_weight,
-        params={"term_name": "vertical_tcp", "weight": 4.0, "num_steps": 20000},
+        params={"term_name": "vertical_tcp", "weight": 3.0, "num_steps": 20000},
     )
 
     vertical_press_posture = CurrTerm(
         func=mdp.modify_reward_weight,
-        params={"term_name": "vertical_press_posture", "weight": 0.5, "num_steps": 20000},
+        params={"term_name": "vertical_press_posture", "weight": 0.25, "num_steps": 20000},
     )
 
     approach_action_direction = CurrTerm(
@@ -335,12 +402,17 @@ class CurriculumCfg:
 
     approach_center_coarse = CurrTerm(
         func=mdp.modify_reward_weight,
-        params={"term_name": "approach_center_coarse", "weight": 3.0, "num_steps": 20000},
+        params={"term_name": "approach_center_coarse", "weight": 2.5, "num_steps": 20000},
     )
 
     finger_center_on_cap = CurrTerm(
         func=mdp.modify_reward_weight,
-        params={"term_name": "finger_center_on_cap", "weight": 4.0, "num_steps": 20000},
+        params={"term_name": "finger_center_on_cap", "weight": 3.0, "num_steps": 20000},
+    )
+
+    finger_side_wall_pair = CurrTerm(
+        func=mdp.modify_reward_weight,
+        params={"term_name": "finger_side_wall_pair", "weight": 10.0, "num_steps": 20000},
     )
 
     side_approach = CurrTerm(
@@ -348,14 +420,34 @@ class CurriculumCfg:
         params={"term_name": "side_approach", "weight": -1.5, "num_steps": 20000},
     )
 
+    finger_over_cap = CurrTerm(
+        func=mdp.modify_reward_weight,
+        params={"term_name": "finger_over_cap", "weight": -2.0, "num_steps": 20000},
+    )
+
+    cap_top_contact = CurrTerm(
+        func=mdp.modify_reward_weight,
+        params={"term_name": "cap_top_contact", "weight": -6.0, "num_steps": 20000},
+    )
+
+    single_finger_contact = CurrTerm(
+        func=mdp.modify_reward_weight,
+        params={"term_name": "single_finger_contact", "weight": -4.0, "num_steps": 20000},
+    )
+
     find_cap_above = CurrTerm(
         func=mdp.modify_reward_weight,
-        params={"term_name": "find_cap_above", "weight": 2.5, "num_steps": 20000},
+        params={"term_name": "find_cap_above", "weight": 1.5, "num_steps": 20000},
     )
 
     descend_to_grasp = CurrTerm(
         func=mdp.modify_reward_weight,
-        params={"term_name": "descend_to_grasp", "weight": 3.0, "num_steps": 20000},
+        params={"term_name": "descend_to_grasp", "weight": 8.0, "num_steps": 20000},
+    )
+
+    close_on_straddle = CurrTerm(
+        func=mdp.modify_reward_weight,
+        params={"term_name": "close_on_straddle", "weight": 6.0, "num_steps": 20000},
     )
 
     grasp_cap = CurrTerm(

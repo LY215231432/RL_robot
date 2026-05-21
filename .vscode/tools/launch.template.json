@@ -1,0 +1,138 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Attach (windows-x86_64/linux-x86_64)",
+            "type": "python",
+            "request": "attach",
+            "port": 3000,
+            "host": "localhost"
+        },
+        {
+            "name": "Python: Train Environment",
+            "type": "python",
+            "request": "launch",
+            "args" : ["--task", "Isaac-Reach-Franka-v0", "--headless"],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/train.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Play Environment",
+            "type": "python",
+            "request": "launch",
+            "args" : ["--task", "Isaac-Reach-Franka-v0", "--num_envs", "32"],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/play.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Train xArm7 Lift",
+            "type": "python",
+            "request": "launch",
+            "args": ["--task", "Isaac-Lift-Cube-XArm7-v0", "--num_envs", "1024", "--headless"],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/train.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Play xArm7 Lift",
+            "type": "python",
+            "request": "launch",
+            "args": [
+                "--task",
+                "Isaac-Lift-Cube-XArm7-Play-v0",
+                "--num_envs",
+                "1",
+                "--checkpoint",
+                "${workspaceFolder}/logs/rsl_rl/xarm7_lift/2026-04-08_12-42-49/model_2999.pt"
+            ],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/play.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Record xArm7 Lift Video",
+            "type": "python",
+            "request": "launch",
+            "args": [
+                "--task",
+                "Isaac-Lift-Cube-XArm7-Play-v0",
+                "--headless",
+                "--video",
+                "--video_length",
+                "300",
+                "--num_envs",
+                "1",
+                "--checkpoint",
+                "${workspaceFolder}/logs/rsl_rl/xarm7_lift/2026-04-08_12-42-49/model_2999.pt"
+            ],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/play.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Train xArm7 Skill Lift",
+            "type": "python",
+            "request": "launch",
+            "args": ["--skill", "lift_cube", "--num_envs", "1024", "--headless"],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/train_xarm7_skill.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Train xArm7 Skill Twist Cap",
+            "type": "python",
+            "request": "launch",
+            "args": ["--skill", "twist_cap", "--num_envs", "256", "--headless"],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/train_xarm7_skill.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Play xArm7 Skill Lift",
+            "type": "python",
+            "request": "launch",
+            "args": ["--skill", "lift_cube", "--num_envs", "1"],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/play_xarm7_skill.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Record xArm7 Skill Lift Video",
+            "type": "python",
+            "request": "launch",
+            "args": ["--skill", "lift_cube", "--headless", "--video", "--video_length", "300", "--num_envs", "1"],
+            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/play_xarm7_skill.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: SinglePytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+              "${file}"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: ALL Pytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["source/isaaclab/test"],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}

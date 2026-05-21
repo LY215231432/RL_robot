@@ -16,6 +16,8 @@
 
 # Python
 .DS_Store
+**/.venv/
+**/venv/
 **/*.egg-info/
 **/__pycache__/
 **/.pytest_cache/
@@ -35,6 +37,9 @@ docker/.container.cfg
 !.vscode
 
 # Outputs
+.cache/
+logs/
+outputs/
 **/output/*
 **/outputs/*
 **/videos/*
@@ -73,3 +78,10 @@ tests/
 # TacSL sensor
 **/tactile_record/*
 **/gelsight_r15_data/*
+
+# Local project artifacts
+*.zip
+2.7.0+cu128
+mywork/archives/
+mywork/mymujoco/archives/
+mywork/mymujoco/models/

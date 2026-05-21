@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<robot name="xarm7_switch_panel">
+  <material name="panel_dark">
+    <color rgba="0.18 0.18 0.20 1.0"/>
+  </material>
+  <material name="slot_gray">
+    <color rgba="0.45 0.45 0.48 1.0"/>
+  </material>
+  <material name="lever_red">
+    <color rgba="0.85 0.12 0.08 1.0"/>
+  </material>
+
+  <link name="panel_base">
+    <inertial>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <mass value="0.8"/>
+      <inertia ixx="0.002" ixy="0" ixz="0" iyy="0.004" iyz="0" izz="0.005"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.24 0.16 0.02"/>
+      </geometry>
+      <material name="panel_dark"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.24 0.16 0.02"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0.023" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.10 0.026 0.006"/>
+      </geometry>
+      <material name="slot_gray"/>
+    </visual>
+  </link>
+
+  <link name="switch_lever">
+    <inertial>
+      <origin xyz="0 0 0.038" rpy="0 0 0"/>
+      <mass value="0.06"/>
+      <inertia ixx="0.00008" ixy="0" ixz="0" iyy="0.00008" iyz="0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.022 0.08"/>
+      </geometry>
+      <material name="lever_red"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.022 0.08"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="switch_joint" type="revolute">
+    <parent link="panel_base"/>
+    <child link="switch_lever"/>
+    <origin xyz="0 0 0.028" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.55" upper="0.55" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.02" friction="0.005"/>
+  </joint>
+</robot>
+

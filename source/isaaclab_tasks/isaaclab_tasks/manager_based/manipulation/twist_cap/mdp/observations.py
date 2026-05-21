@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
 
 
-CAP_SIDE_GRASP_HEIGHT = 0.018
+CAP_SIDE_GRASP_HEIGHT = 0.033
 CAP_APPROACH_CLEARANCE = 0.055
 LEFT_FINGER_PAD_CENTER_LOCAL = (0.0, 0.011462, 0.083039)
 RIGHT_FINGER_PAD_CENTER_LOCAL = (0.0, -0.011462, 0.083039)
@@ -61,10 +61,25 @@ def _gripper_pad_midpoint_w(
 ) -> torch.Tensor:
     """Approximate the midpoint between the two finger pads in world frame."""
 
+    left_pad_center_w, right_pad_center_w = _finger_pad_positions_w(
+        env,
+        left_finger_cfg=left_finger_cfg,
+        right_finger_cfg=right_finger_cfg,
+    )
+    return 0.5 * (left_pad_center_w + right_pad_center_w)
+
+
+def _finger_pad_positions_w(
+    env: ManagerBasedRLEnv,
+    left_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="left_finger"),
+    right_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="right_finger"),
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Return the approximate left and right finger-pad centers in world frame."""
+
     robot: Articulation = env.scene[left_finger_cfg.name]
     left_pad_center_w = _body_point_w(robot, left_finger_cfg, LEFT_FINGER_PAD_CENTER_LOCAL)
     right_pad_center_w = _body_point_w(robot, right_finger_cfg, RIGHT_FINGER_PAD_CENTER_LOCAL)
-    return 0.5 * (left_pad_center_w + right_pad_center_w)
+    return left_pad_center_w, right_pad_center_w
 
 
 def _cap_grasp_target_w(
@@ -147,6 +162,60 @@ def gripper_center_to_cap(
     cap_pos_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, cap_target_w)
     gripper_center_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, gripper_center_w)
     return cap_pos_b - gripper_center_b
+
+
+def finger_pair_to_cap(
+    env: ManagerBasedRLEnv,
+    grasp_height: float = CAP_SIDE_GRASP_HEIGHT,
+    robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    cap_cfg: SceneEntityCfg = SceneEntityCfg("twist_object", body_names="cap_link"),
+    left_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="left_finger"),
+    right_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="right_finger"),
+) -> torch.Tensor:
+    """Return cap grasp-target error vectors for the left and right finger pads."""
+
+    robot: Articulation = env.scene[robot_cfg.name]
+    twist_object: Articulation = env.scene[cap_cfg.name]
+    cap_target_w = _cap_grasp_target_w(twist_object, cap_cfg, grasp_height=grasp_height)
+    left_pad_w, right_pad_w = _finger_pad_positions_w(
+        env,
+        left_finger_cfg=left_finger_cfg,
+        right_finger_cfg=right_finger_cfg,
+    )
+    cap_target_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, cap_target_w)
+    left_pad_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, left_pad_w)
+    right_pad_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, right_pad_w)
+    return torch.cat((cap_target_b - left_pad_b, cap_target_b - right_pad_b), dim=1)
+
+
+def finger_pair_to_approach_target(
+    env: ManagerBasedRLEnv,
+    approach_clearance: float = CAP_APPROACH_CLEARANCE,
+    grasp_height: float = CAP_SIDE_GRASP_HEIGHT,
+    robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    cap_cfg: SceneEntityCfg = SceneEntityCfg("twist_object", body_names="cap_link"),
+    left_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="left_finger"),
+    right_finger_cfg: SceneEntityCfg = SceneEntityCfg("robot", body_names="right_finger"),
+) -> torch.Tensor:
+    """Return approach-target error vectors for the left and right finger pads."""
+
+    robot: Articulation = env.scene[robot_cfg.name]
+    twist_object: Articulation = env.scene[cap_cfg.name]
+    approach_target_w = _cap_approach_target_w(
+        twist_object,
+        cap_cfg,
+        approach_clearance=approach_clearance,
+        grasp_height=grasp_height,
+    )
+    left_pad_w, right_pad_w = _finger_pad_positions_w(
+        env,
+        left_finger_cfg=left_finger_cfg,
+        right_finger_cfg=right_finger_cfg,
+    )
+    approach_target_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, approach_target_w)
+    left_pad_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, left_pad_w)
+    right_pad_b, _ = subtract_frame_transforms(robot.data.root_pos_w, robot.data.root_quat_w, right_pad_w)
+    return torch.cat((approach_target_b - left_pad_b, approach_target_b - right_pad_b), dim=1)
 
 
 def gripper_center_to_approach_target(

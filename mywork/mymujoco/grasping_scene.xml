@@ -1,0 +1,19 @@
+<mujoco>
+  <include file="grasping_assets/scene.xml"/>
+
+  <worldbody>
+    <body name="table" pos="0.4 0 0.06">
+      <geom type="box" size="0.6 0.4 0.06" rgba="0.8 0.8 0.8 1"/>
+    </body>
+
+    <body name="object_to_grasp" pos="0.55 0.0 0.145">
+      <joint name="object_free" type="free" damping="0.01"/>
+      <geom name="object_geom" type="box" size="0.025 0.025 0.025" rgba="1 0 0 1" mass="0.1" friction="1 0.01 0.001"/>
+      <site name="object_center" size="0.01" rgba="1 0 0 0.5"/>
+    </body>
+  </worldbody>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.6 0.6 0.6" rgb2="0 0 0" width="512" height="512"/>
+  </asset>
+</mujoco>
